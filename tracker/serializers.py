@@ -16,7 +16,7 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "parent_task", "assignee", "deadline", "status", "created_at"]
 
     def validate_deadline(self, value):
-        if value < timezone.now():
+        if value <= timezone.now():
             raise serializers.ValidationError("Срок выполнения не может быть в прошлом.")
         return value
 
