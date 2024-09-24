@@ -192,27 +192,18 @@ class TaskAPITest(APITestCase):
             name="Родительская задача",
             assignee=self.employee,
             deadline=timezone.now() + timedelta(days=5),
-            status="not_started",  # Изменено с "in_progress" на "not_started"
+            status="not_started",
         )
         _ = Task.objects.create(
             name="Подзадача",
             assignee=self.employee,
             deadline=timezone.now() + timedelta(days=3),
-            status="in_progress",  # Изменено с "not_started" на "in_progress"
+            status="in_progress",
             parent_task=parent_task,
         )
         response = self.client.get("/api/tasks/important_tasks/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Выводим содержимое ответа для отладки
-        print("Response data:", response.data)
-
-        # Проверяем, есть ли родительская задача в списке важных задач
-        found = any(task["task"]["id"] == parent_task.id for task in response.data)
-        if not found:
-            print(f"Parent task with id {parent_task.id} not found in important tasks")
-            # Выводим ID всех задач в ответе
-            task_ids = [task["task"]["id"] for task in response.data]
-            print("Task IDs in response:", task_ids)
+        found = any(task["Важная задача"] == parent_task.name for task in response.data)
 
         self.assertTrue(found, "Родительская задача не найдена в списке важных задач")
